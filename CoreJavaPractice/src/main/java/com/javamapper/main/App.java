@@ -10,13 +10,20 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.javamapper.common.AppConstants;
+
 /**
  * Hello world!
  *
  */
 public class App {
 	private static final Scanner scanner = new Scanner(System.in);
-	final private static String PROPERTIES_FILE_PATH="programIndexList.properties";
+	private static final String PROPERTIES_FILE_PATH="programIndexList.properties";
+	private static Logger logger = LoggerFactory.getLogger(App.class);
 	
 	public static void main(String[] args) {
 		
@@ -26,9 +33,8 @@ public class App {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("--- Need to modify input values then either frame code to take input from "
-				+ "user in repective class Or Update given values in class ---");
-		System.out.println("Give your selection in number:");
+		logger.info("--- Need to modify input values then either frame code to take input from user in repective class Or Update given values in class ---");
+		logger.info("Give your selection in number:");
 		Set<Entry<Object, Object>> propValueSet = properties.entrySet();
 		propValueSet.stream()
 					.map(entry->String.valueOf(entry.getValue()))
@@ -37,7 +43,7 @@ public class App {
 						String strArr2=str2.split(" ")[0];
 						return Integer.valueOf(strArr1.substring(0, strArr1.length()-1))-Integer.valueOf(strArr2.substring(0, strArr2.length()-1));
 					})
-					.forEach(System.out::println);
+					.forEach(logger::info);
 		String indexVal = scanner.nextLine();
 		Optional<Entry<Object, Object>> propSelection = propValueSet.stream()
 																	.filter(val->{
@@ -49,7 +55,7 @@ public class App {
 			String className = key.substring(0, key.lastIndexOf('.'));
 			String methodName = key.substring(key.lastIndexOf('.') + 1);
 			try {
-				Object object = Class.forName(className).newInstance();
+				Object object = Class.forName(className).getDeclaredConstructor().newInstance();
 				Method declaredMethod = object.getClass().getDeclaredMethod(methodName);
 				declaredMethod.invoke(object);
 			} catch (InstantiationException 
@@ -59,7 +65,7 @@ public class App {
 					| SecurityException 
 					| IllegalArgumentException 
 					| InvocationTargetException e) {
-				e.printStackTrace();
+				logger.error(AppConstants.ERROR_LOG,ExceptionUtils.getStackTrace(e));
 			}
 		});
 	}
