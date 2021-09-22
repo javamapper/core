@@ -10,5 +10,5 @@ public class AppConstants {
 	public static final String WRITE_INT = "write-%d";
 	public static final String CONTAIN_LOG = "contains {}:{}";
 	public static final String READ_VALUE_LOG = "read value {}";
-	public enum PAYMENT_TYPE{DEBIT,CREDIT}
+	public enum PAYMENT_TYPE{DEBIT,CREDIT,STATUS}
 }
